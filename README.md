@@ -1,2 +1,0 @@
-# OBATA-VTU-APP
-My app
