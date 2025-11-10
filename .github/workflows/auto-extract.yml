@@ -1,1 +1,36 @@
+name: OBATA VTU Auto Extract
 
+on:
+  push:
+    paths:
+      - "OBATA_VTU_AUTO_IMPORT.zip"
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install p7zip
+        run: sudo apt-get update && sudo apt-get install -y p7zip-full
+
+      - name: Delete all existing files except zip and .git
+        run: |
+          shopt -s extglob
+          rm -rf !(".git"|"OBATA_VTU_AUTO_IMPORT.zip")
+
+      - name: Extract ZIP
+        run: 7z x OBATA_VTU_AUTO_IMPORT.zip -o./
+
+      - name: Remove ZIP
+        run: rm OBATA_VTU_AUTO_IMPORT.zip
+
+      - name: Commit extracted files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "OBATA VTU App Auto-Extracted ✅" || echo "No changes to commit"
+          git push
